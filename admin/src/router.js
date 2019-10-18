@@ -7,14 +7,22 @@ import ItemsAdd from './views/ItemsAdd.vue'
 import ItemsList from './views/ItemsList.vue'
 import HerosAdd from './views/HerosAdd.vue'
 import HerosList from './views/HerosList.vue'
+import AdminUserAdd from './views/AdminUserAdd.vue'
+import AdminUserList from './views/AdminUserList.vue'
+import Login from './views/Login'
 Vue.use(Router)
 export default new Router({
   routes: [
+    { path: '/login', name: 'login', component: Login },
     {
       path: '/',
       name: 'Main',
       component: Main,
       children: [
+        {
+          path: '/', redirect: '/categories/list',
+          component: CategoryList
+        },
         {
           path: '/categories/list',
           name: 'CategoryList',
@@ -62,6 +70,23 @@ export default new Router({
           path: '/heros/edit/:id',
           name: 'HerosAdd',
           component: HerosAdd,
+          props: true
+        },
+        {
+          path: '/admin_users/list',
+          name: 'AdminUserList',
+          component: AdminUserList,
+        },
+        {
+          path: '/admin_users/create',
+          name: 'AdminUserAdd',
+          component: AdminUserAdd,
+          props: true
+        },
+        {
+          path: '/admin_users/edit/:id',
+          name: 'AdminUserAdd',
+          component: AdminUserAdd,
           props: true
         }
       ]

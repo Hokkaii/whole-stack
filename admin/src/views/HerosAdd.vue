@@ -1,9 +1,9 @@
 <template>
   <div>
-    <el-tabs v-model="activeName" type="border-card">
-      <el-tab-pane label="基础信息" name="first">
-        <h1>{{title}}</h1>
-        <el-form ref="form" :model="model" label-width="80px">
+    <el-form label-width="80px">
+      <h1>{{title}}</h1>
+      <el-tabs v-model="activeName" type="border-card">
+        <el-tab-pane label="基础信息" name="first">
           <el-form-item label="名称:">
             <el-input v-model="model.name"></el-input>
           </el-form-item>
@@ -15,7 +15,7 @@
               class="avatar-uploader"
               action="http://localhost:3000/admin/api/upload"
               :show-file-list="false"
-              :on-success="afterUpload"
+              :on-success="afterUploadForHoroIcon"
             >
               <img v-if="model.icon" :src="model.icon" class="avatar" />
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -62,23 +62,41 @@
           <el-form-item label="团战技巧:">
             <el-input type="textarea" v-model="model.teamTips"></el-input>
           </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="onSubmit">保存</el-button>
-            <el-button>取消</el-button>
-          </el-form-item>
-        </el-form>
-      </el-tab-pane>
-      <el-tab-pane label="技能信息" name="second">
-        <el-button>添加技能</el-button>
-        <el-row type="flex">
-          <el-col :md="12">
-            <el-form-item label="名称">
-              <!-- <el-input></el-input> -->
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-tab-pane>
-    </el-tabs>
+        </el-tab-pane>
+        <el-tab-pane label="技能信息" name="second">
+          <el-button @click="addSkill">添加技能</el-button>
+          <el-row type="flex">
+            <el-col :span="10" v-for="(item,index) in model.skills" :key="index">
+              <i class="el-icon-error deleteIcon" @click="model.skills.splice(index,1)"></i>
+              <el-form-item label="名称">
+                <el-input v-model="item.name"></el-input>
+              </el-form-item>
+              <el-form-item label="图标">
+                <el-upload
+                  class="avatar-uploader"
+                  action="http://localhost:3000/admin/api/upload"
+                  :show-file-list="false"
+                  :on-success="(res,file)=>afterUploadForSkillIcon(res,index)"
+                >
+                  <img v-if="item.icon" :src="model.icon" class="avatar" />
+                  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                </el-upload>
+              </el-form-item>
+              <el-form-item label="描述">
+                <el-input type="textarea" v-model="item.descrition"></el-input>
+              </el-form-item>
+              <el-form-item label="小提示">
+                <el-input type="textarea" v-model="item.tips"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-tab-pane>
+      </el-tabs>
+      <el-form-item style="margin-top:30px;">
+        <el-button type="primary" @click="onSubmit">保存</el-button>
+        <el-button>取消</el-button>
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 <script>
@@ -99,8 +117,9 @@ export default {
         name: "",
         icon: "",
         title: "",
-        categories: "",
-        scores: {}
+        categories: [],
+        scores: {},
+        skills: []
       }
     };
   },
@@ -152,17 +171,45 @@ export default {
       );
       this.items = res.data;
     },
-    afterUpload(res, file) {
-      console.log(res);
+    afterUploadForHoroIcon(res) {
       this.model.icon = res.url;
       // this.imageUrl = URL.createObjectURL(file.raw);
+    },
+    afterUploadForSkillIcon(res, index) {
+      this.$set(this.model.skills[index], "icon", res.url);
+    },
+    addSkill() {
+      this.model.skills.push({});
     }
   }
 };
 </script>
 <style>
+.el-row--flex {
+  flex-wrap: wrap;
+}
+.el-col {
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.12), 0 0 6px 0 rgba(0, 0, 0, 0.04);
+  margin: 30px;
+  padding: 30px 30px 10px 10px;
+  position: relative;
+}
+</style>
+<style scoped>
 h1 {
   margin-bottom: 30px;
+}
+.deleteIcon {
+  position: absolute;
+  right: -15px;
+  top: -15px;
+  opacity: 0.3;
+  font-size: 30px;
+  cursor: pointer;
+  transition: 1s;
+}
+.deleteIcon:hover {
+  opacity: 0.5;
 }
 .avatar-uploader .el-upload {
   border: 1px dashed #d9d9d9;
