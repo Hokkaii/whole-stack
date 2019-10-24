@@ -9,6 +9,7 @@
         <el-upload
           class="avatar-uploader"
           action="http://localhost:3000/admin/api/upload"
+          :headers="getAuthorHeaders()"
           :show-file-list="false"
           :on-success="afterUpload"
         >

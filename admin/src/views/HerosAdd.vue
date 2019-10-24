@@ -14,6 +14,7 @@
             <el-upload
               class="avatar-uploader"
               action="http://localhost:3000/admin/api/upload"
+              :headers="getAuthorHeaders()"
               :show-file-list="false"
               :on-success="afterUploadForHoroIcon"
             >
@@ -75,6 +76,7 @@
                 <el-upload
                   class="avatar-uploader"
                   action="http://localhost:3000/admin/api/upload"
+                  :headers="getAuthorHeaders()"
                   :show-file-list="false"
                   :on-success="(res,file)=>afterUploadForSkillIcon(res,index)"
                 >

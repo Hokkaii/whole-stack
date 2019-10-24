@@ -31,6 +31,7 @@ export default {
         this.model
       );
       localStorage.token = res.data.token;
+      localStorage.user = this.model.name;
       this.$router.push("/");
       this.$message.success("登陆成功");
     }

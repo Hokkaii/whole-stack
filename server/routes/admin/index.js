@@ -10,14 +10,11 @@ module.exports = app => {
     //创建资源
     router.post('/', async (req, res) => {
         const model = await req.Model.create(req.body);
-        console.log(model)
         res.send(model);
     })
     //资源列表
     router.get('/',
         async (req, res) => {
-            console.log('req.user========>', req.user)
-            // const items = await req.Model.find().populate('parent').limit(10);
             const options = {};
             if (req.Model.modelName === 'Category') {
                 options.populate = 'parent'
@@ -58,10 +55,10 @@ module.exports = app => {
         }, async (req, res, next) => {
             // 首字母大写，复数变单数
             const modelName = require('inflection').classify(req.params.resource)
-            console.log(modelName)
             req.Model = require(`../../models/${modelName}`)
             next()
         }, router)
+
     const multer = require('multer');
     const upload = multer({ dest: __dirname + '/../../uploads' })
     app.post('/admin/api/upload', upload.single('file'), async (req, res) => {
@@ -74,22 +71,13 @@ module.exports = app => {
         const { name, password } = req.body;
         const AdminUser = require('../../models/AdminUser')
         const user = await AdminUser.findOne({ name }).select('+password')
-        assert(user, 422, '用户不存在')//抛出错误
-        // if (!user) {
-        //     return res.status(422).send({
-        //         message: '用户不存在'
-        //     })
-        // }
+        assert(user, 422, '用户不存在')//user为false时抛出错误
+
         // 2.校验密码
         const inVaild = require('bcryptjs').compareSync(password, user.password)
-        assert(inVaild, 422, '密码错误')//抛出错误
-        // if (!inVaild) {
-        //     return res.status(422).send({
-        //         message: '密码错误'
-        //     })
-        // }
-        // 3.返回token
+        assert(inVaild, 422, '密码错误')
 
+        // 3.返回token
         const token = jwt.sign({ id: user._id }, app.get('secret'))
         res.send({ token })
     })
